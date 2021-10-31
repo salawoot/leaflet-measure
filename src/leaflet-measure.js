@@ -18,7 +18,9 @@ import {
 } from './templates';
 
 const templateSettings = {
-  imports: { numberFormat },
+  imports: {
+    numberFormat
+  },
   interpolate: /{{([\s\S]+?)}}/g // mustache
 };
 const controlTemplateCompiled = template(controlTemplate, templateSettings);
@@ -47,7 +49,10 @@ L.Control.Measure = L.Control.extend({
   initialize: function(options) {
     L.setOptions(this, options);
     const { activeColor, completedColor } = this.options;
-    this._symbols = new Symbology({ activeColor, completedColor });
+    this._symbols = new Symbology({
+      activeColor,
+      completedColor
+    });
     this.options.units = L.extend({}, units, this.options.units);
   },
   onAdd: function(map) {
@@ -171,7 +176,9 @@ L.Control.Measure = L.Control.extend({
   },
   // return to state with no measure in progress, undo `this._startMeasure`
   _finishMeasure: function() {
-    const model = L.extend({}, this._resultsModel, { points: this._latlngs });
+    const model = L.extend({}, this._resultsModel, {
+      points: this._latlngs
+    });
 
     this._locked = false;
 
@@ -252,19 +259,49 @@ L.Control.Measure = L.Control.extend({
 
     function buildDisplay(val, primaryUnit, secondaryUnit, decPoint, thousandsSep) {
       if (primaryUnit && unitDefinitions[primaryUnit]) {
-        let display = formatMeasure(val, unitDefinitions[primaryUnit], decPoint, thousandsSep);
-        if (secondaryUnit && unitDefinitions[secondaryUnit]) {
-          const formatted = formatMeasure(
-            val,
-            unitDefinitions[secondaryUnit],
-            decPoint,
-            thousandsSep
-          );
-          display = `${display} (${formatted})`;
+        if (primaryUnit === 'rai') {
+          let display = raiMeasure(val, unitDefinitions[primaryUnit]);
+          if (secondaryUnit && unitDefinitions[secondaryUnit]) {
+            const formatted = formatMeasure(
+              val,
+              unitDefinitions[secondaryUnit],
+              decPoint,
+              thousandsSep
+            );
+            display = `${display} <br/><small>(${formatted})</small>`;
+          }
+          return display;
+        } else {
+          let display = formatMeasure(val, unitDefinitions[primaryUnit], decPoint, thousandsSep);
+          if (secondaryUnit && unitDefinitions[secondaryUnit]) {
+            const formatted = formatMeasure(
+              val,
+              unitDefinitions[secondaryUnit],
+              decPoint,
+              thousandsSep
+            );
+            display = `${display} (${formatted})`;
+          }
+          return display;
         }
-        return display;
       }
       return formatMeasure(val, null, decPoint, thousandsSep);
+    }
+
+    function raiMeasure(val, unit) {
+      const u = L.extend(
+        {
+          factor: 1,
+          decimals: 0
+        },
+        unit
+      );
+
+      const rai = val * u.factor;
+      const sqWa = ((rai % 1) * 4).toFixed(2);
+      const ngan = Math.round(sqWa);
+
+      return `${Math.round(rai)} ไร่ ${ngan} งาน ${sqWa.toString().split('.')[1]} ตารางวา `;
     }
 
     function formatMeasure(val, unit, decPoint, thousandsSep) {
@@ -277,10 +314,18 @@ L.Control.Measure = L.Control.extend({
         miles: __('miles'),
         sqfeet: __('sqfeet'),
         sqmeters: __('sqmeters'),
-        sqmiles: __('sqmiles')
+        sqmiles: __('sqmiles'),
+        rai: __('rai'),
+        ngan: __('ngan')
       };
 
-      const u = L.extend({ factor: 1, decimals: 0 }, unit);
+      const u = L.extend(
+        {
+          factor: 1,
+          decimals: 0
+        },
+        unit
+      );
       const formattedNumber = numberFormat(
         val * u.factor,
         u.decimals,
@@ -302,7 +347,9 @@ L.Control.Measure = L.Control.extend({
         pointCount: this._latlngs.length
       }
     ));
-    this.$results.innerHTML = resultsTemplateCompiled({ model });
+    this.$results.innerHTML = resultsTemplateCompiled({
+      model
+    });
   },
   // mouse move handler while measure in progress
   // adds floating measure marker under cursor

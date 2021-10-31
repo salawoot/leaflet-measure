@@ -47,5 +47,15 @@ export default {
     factor: 0.000000386102,
     display: 'sqmiles',
     decimals: 2
+  },
+  rai: {
+    factor: 0.000625,
+    display: 'rai',
+    decimals: 2
+  },
+  ngan: {
+    factor: 0.0025,
+    display: 'ngan',
+    decimals: 2
   }
 };
