@@ -299,9 +299,9 @@ L.Control.Measure = L.Control.extend({
 
       const rai = val * u.factor;
       const sqWa = ((rai % 1) * 4).toFixed(2);
-      const ngan = Math.round(sqWa);
+      const ngan = sqWa.toString().split('.');
 
-      return `${Math.round(rai)} ไร่ ${ngan} งาน ${sqWa.toString().split('.')[1]} ตารางวา `;
+      return `${rai.toString().split('.')[0]} ไร่ ${ngan[0]} งาน ${ngan[1]} ตารางวา `;
     }
 
     function formatMeasure(val, unit, decPoint, thousandsSep) {

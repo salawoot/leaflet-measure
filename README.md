@@ -4,6 +4,27 @@ Coordinate, linear, and area measure control for [Leaflet](http://leafletjs.com)
 
 <hr>
 
+## เพิ่มการวัดพื้นที่เป็น ไร่ งาน ตารางวา
+รันคำสั่ง ```yarn build``` ไฟล์จะอยู้ที่ `./dist/leaflet-measure.th.js`
+
+ใช้งาน
+
+```html 
+<script src="leaflet-measure.th.js"></script>
+```
+
+```javascript
+var map = L.map('map');
+var measureControl = L.control.measure({
+  primaryLengthUnit: 'kilometers',
+  secondaryLengthUnit: 'meters',
+  primaryAreaUnit: 'rai',
+  secondaryAreaUnit: 'sqmeters'
+});
+measureControl.addTo(map);
+```
+<hr>
+
 
 ## [Demo](http://ljagis.github.io/leaflet-measure)
 
